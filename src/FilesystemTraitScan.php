@@ -2,111 +2,31 @@
 
 namespace nathanwooten\Filesystem;
 
-use nathanwooten\Filesystem\{
-
-	FilesystemFilterDirectory,
-	FilesystemFilterInterface,
-	FilesystemTraitImplode,
-	FilesystemTraitNormalize
-
-};
-
-use Exception;
-use OutOfBoundsException;
-
-class FilesystemHelperScan
+trait FilesystemTraitScan
 {
 
-	use FilesystemTraitExplode;
-	use FilesystemTraitImplode;
-	use FilesystemTraitNormalize;
+	use FilesystemTraitHelper;
 
 	public function scan( $readable, array $filters = [] ) {
 
-		$scan = [];
-
-		if ( is_array( $readable ) ) {
-			$readable = $this->implode( $readable );
+		if ( ! $readable ) {
+			throw new Exception( 'Unreadable provided' );
 		}
 
-		if ( ! is_readable( $readable ) ) {
-
-			throw new Exception( 'Not readable for scan' );
-		}
-
-		foreach ( scandir( $readable ) as $key => $item ) {
-
-			$item = $this->apply( $item, $filters );
-
-			if ( $item ) {
-				$scan[ $key ] = $item;
-			}
-		}
-
+		$scan = $this->act( __TRAIT__, __FUNCTION__, ...func_get_args() );
 		return $scan;
 
 	}
 
-	public function apply( $item, array $filters )
-	{
+	public function iterateScan( $readable, array $filters = [] ) {
 
-		if ( empty( $item ) ) {
-			return;
+		if ( ! $readable ) {
+			throw new Exception( 'Unreadable provided' );
 		}
 
-		foreach ( $filters as $filter ) {
-
-			if ( is_string( $filter ) ) {
-				if ( ! class_exists( $filter ) || ! in_array( __NAMESPACE__ . '\\' . 'FilesystemFilterInterface', class_implements( $filter ) ) ) {
-
-					throw new OutOfBoundsException( 'Invalid filter' );
-				}
-				$filter = new $filter;
-			}
-
-			$item = $filter( $item );
-		}
-
-		return $item;
+		$iterateScan = $this->act( __TRAIT__, __FUNCTION__, ...func_get_args() );
+		return $iterateScan;
 
 	}
-
-	public function iterateScan(
-		$readable,
-		$filters = [
-			'nathanwooten\Filesystem\FilesystemFilterDirectoryNot',
-			'nathanwooten\Filesystem\FilesystemFilterDots'
-		],
-		array $structure = []
-	) {
-
-		$dirs = array_values( $this->scan( $readable, $filters ) );
-
-		if ( ! empty( $dirs ) ) {
-
-			$scan = $dirs;
-			foreach ( $dirs as $key => $dir ) {
-
-				$prev = 0 < $key ? $key -1 : 0;
-
-				$norm = $this->normalize( $readable );
-				if ( is_array( $norm ) ) {
-					$norm = implode( '', $norm );
-				}
-
-				$contents = $this->iterateScan( $norm . $dir, $filters, $structure );
-var_dump( $contents );
-				$contents = array_combine( array_reverse( $contents ), array_fill( 0, count( $contents ), [] ) );
-
-				$structure = & $structure[ $dirs[ $prev ] ];
-				$structure[ $dir ] = $contents;
-
-			}
-		}
-
-		return $structure;
-
-	}
-
 
 }
