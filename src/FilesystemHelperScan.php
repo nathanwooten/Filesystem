@@ -84,10 +84,10 @@ class FilesystemHelperScan
 
 		if ( ! empty( $dirs ) ) {
 
+			$structure = empty( $structure ) ? $structure : current( $structure );
+
 			$scan = $dirs;
 			foreach ( $dirs as $key => $dir ) {
-
-				$prev = 0 < $key ? $key -1 : 0;
 
 				$norm = $this->normalize( $readable );
 				if ( is_array( $norm ) ) {
@@ -95,12 +95,8 @@ class FilesystemHelperScan
 				}
 
 				$contents = $this->iterateScan( $norm . $dir, $filters, $structure );
-var_dump( $contents );
-				$contents = array_combine( array_reverse( $contents ), array_fill( 0, count( $contents ), [] ) );
 
-				$structure = & $structure[ $dirs[ $prev ] ];
 				$structure[ $dir ] = $contents;
-
 			}
 		}
 
