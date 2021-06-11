@@ -77,28 +77,34 @@ class FilesystemHelperScan
 			'nathanwooten\Filesystem\FilesystemFilterDirectoryNot',
 			'nathanwooten\Filesystem\FilesystemFilterDots'
 		],
-		$iteration = []
+		array $structure = []
 	) {
 
-		$dirs = $this->scan( $readable, $filters );
+		$dirs = array_values( $this->scan( $readable, $filters ) );
 
-		$rArray = $this->explode( $readable );
+		if ( ! empty( $dirs ) ) {
 
-		foreach ( $dirs as $key => $dir ) {
+			$scan = $dirs;
+			foreach ( $dirs as $key => $dir ) {
 
-			$norm = $this->normalize( $readable );
-			if ( is_array( $norm ) ) {
-				$norm = implode( '', $norm );
+				$prev = 0 < $key ? $key -1 : 0;
+
+				$norm = $this->normalize( $readable );
+				if ( is_array( $norm ) ) {
+					$norm = implode( '', $norm );
+				}
+
+				$contents = $this->iterateScan( $norm . $dir, $filters, $structure );
+var_dump( $contents );
+				$contents = array_combine( array_reverse( $contents ), array_fill( 0, count( $contents ), [] ) );
+
+				$structure = & $structure[ $dirs[ $prev ] ];
+				$structure[ $dir ] = $contents;
+
 			}
-
-			$childReadable = $norm . $dir;
-var_dump( $childReadable );
-			$it = $this->iterateScan( $childReadable, $filters );
-
 		}
 
-		$list = $iteration;
-		return $list;
+		return $structure;
 
 	}
 
