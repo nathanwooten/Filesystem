@@ -43,6 +43,8 @@ class FilesystemHelperScan
 			}
 		}
 
+		$scan = array_values( $scan );
+
 		return $scan;
 
 	}
@@ -71,20 +73,35 @@ class FilesystemHelperScan
 
 	}
 
-	public function iterateScan(
+	public function structure( $directory, $filters = [ 'nathanwooten\Filesystem\FilesystemFilterDirectoryNot', 'nathanwooten\Filesystem\FilesystemFilterDots' ], ) {
+
+
+
+
+
+	}
+
+	public function structure(
 		$readable,
 		$filters = [
 			'nathanwooten\Filesystem\FilesystemFilterDirectoryNot',
 			'nathanwooten\Filesystem\FilesystemFilterDots'
 		],
-		array $structure = []
+		array $structure = null, 
+		int $level = 0
 	) {
+
+		if ( ! is_readable( $this->implode( $readable ) ) ) {
+			throw new OutOfBoundsException( 'Readable must exists and respond to file_get_contents' );
+		}
 
 		$dirs = array_values( $this->scan( $readable, $filters ) );
 
+		++$level;
+
 		if ( ! empty( $dirs ) ) {
 
-			$structure = empty( $structure ) ? $structure : current( $structure );
+			$structure = $current = empty( $structure ) ? [] : current( $values );
 
 			$scan = $dirs;
 			foreach ( $dirs as $key => $dir ) {
@@ -94,15 +111,27 @@ class FilesystemHelperScan
 					$norm = implode( '', $norm );
 				}
 
-				$contents = $this->iterateScan( $norm . $dir, $filters, $structure );
+				array_shift( $current );
+				$contents = $this->structure( $norm . $dir, $filters, $current, $level );
 
 				$structure[ $dir ] = $contents;
+				if ( count( $dirs ) -1 === $key ) {
+					--$level;
+					for ( $i = -1; $i < $level; ++$i ) {
+
+						$parent = array_search( $structure, ;
+					}
+
+
+				}
 			}
+
 		}
 
-		return $structure;
+var_dump( $return );
+
+		return $return;
 
 	}
-
 
 }

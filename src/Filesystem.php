@@ -2,33 +2,78 @@
 
 namespace nathanwooten\Filesystem;
 
-class Filesystem
+use nathanwooten\Filesystem\{
+
+	FilesystemTraitFactory,
+	FilesystemTraitNormalize,
+	FilesystemTraitSingleton
+
+};
+
+use Exception;
+
+class Filesystem//implements FilesystemRegistersInterface
 {
 
-	use FilesystemTraitExplode;
-	use FilesystemTraitImplode;
-	use FilesystemTraitNormalize;
-	use FilesystemTraitSeparator;
+	use FilesystemTraitFactory;
 	use FilesystemTraitSingleton;
 
-	public $path;
+	protected $domain;
+	protected $locked = false;
+	protected $root = [ 'C:', 'nathanwooten', 'Operation', 'Violet', 'HomeBranch', 'Profordable', 'Projects', 'simplewebsite', 'Dev', 'Home', 'src' ];
 
-	protected function __construct() {}
+	protected function __construct( $root = null ) {
 
-	public function getPath( $root = false )
+		$this->setRoot( $root );
+
+	}
+
+	public function domain()
 	{
 
-		if ( ! isset( $this->path ) ) {
+		return $this->domain;
 
-			$this->path = new FilesystemDirRoot;
+	}
+
+	public function setRoot( $root = null )
+	{
+
+		if ( $root && ! isset( $this->root ) || ! $this->locked ) {
+
+			$this->root = $root;
+			$this->setDomain( $this->create() );
+
+			$this->locked = true;
 		}
 
-		$path = $this->path;
-		if ( ! $root ) {
-			$path = $path->getPath();
-		}
+	}
 
-		return $path;
+	public function getRoot()
+	{
+
+		return $this->root;
+
+	}
+
+	public function unlock()
+	{
+
+		$this->locked = false;
+
+		return $this;
+
+	}
+
+	protected function setDomain( FilesystemDirectory $directory ) {
+
+		$this->domain = $directory;
+
+	}
+
+	protected function create()
+	{
+
+		return $this->factory()->createDirectory( $this->root );
 
 	}
 

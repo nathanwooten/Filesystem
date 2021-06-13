@@ -5,7 +5,7 @@ namespace nathanwooten\Filesystem;
 trait FilesystemTraitExplode
 {
 
-	public function explode( string $explode )
+	public function explode( $explode = null )
 	{
 
 		return ( new FilesystemHelperExplode )->explode( $explode );

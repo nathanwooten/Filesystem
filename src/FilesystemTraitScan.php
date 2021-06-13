@@ -18,14 +18,15 @@ trait FilesystemTraitScan
 
 	}
 
-	public function iterateScan( $readable, array $filters = [] ) {
+	public function structure( $readable, array $filters = [] ) {
 
 		if ( ! $readable ) {
 			throw new Exception( 'Unreadable provided' );
 		}
 
-		$iterateScan = $this->act( __TRAIT__, __FUNCTION__, ...func_get_args() );
-		return $iterateScan;
+		$scan = $this->act( __TRAIT__, __FUNCTION__, ...func_get_args() );
+
+		return $scan;
 
 	}
 
