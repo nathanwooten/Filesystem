@@ -14,46 +14,7 @@ abstract class FilesystemFactoryAbstract implements FilesystemPackage
 class FilesystemFactory extends FilesystemFactoryAbstract {
 
 	protected $name = 'factory';
-/*
-	public function createDirectory( $input )
-	{
 
-		$key = $this->hasInput( $input );
-		if ( $key ) {
-			$inputs = $this->filesystem()->getInput();
-			$input = $inputs[ $key ];
-		} else {
-			$input = $this->getInput( $input );
-		}
-
-
-
-
-
-
-			$directory = $this->get( $input );
-			return $directory;
-		}
-
-		if ( ! $this->filesystem()->hasInput( $input ) ) {
-
-			if ( $input->isObject() ) {
-
-				$directoryObject = $input->getObject();
-
-			} else {
-
-				$directoryObject = $this->create( 'Directory', $input );
-			}
-		} else {
-
-			$directoryObject = $this->filesystem()->get( $directory );
-		}
-
-		return $directory;
-
-	}
-*/
 	public function createInput( $directory )
 	{
 
@@ -64,7 +25,7 @@ class FilesystemFactory extends FilesystemFactoryAbstract {
 
 	public function createSpl( $item ) {
 
-		$item = $this->normalize( $item, 'string', 'readable' );
+		$item = $this->normalize( $item );
 
 		$spl = $this->create( '\SplFileInfo', $item );
 		return $spl;
@@ -89,12 +50,12 @@ class FilesystemFactory extends FilesystemFactoryAbstract {
 		if ( class_exists( $string ) ) {
 			return $string;
 		}
-
+var_dump( $string );
 		$class = $this->qualify( $string );
 		if ( class_exists( $class ) ) {
 			return $class;
 		}
-
+var_dump( 'da da da da' );
 		return false;
 
 	}
@@ -130,6 +91,20 @@ class FilesystemFactory extends FilesystemFactoryAbstract {
 	{
 
 		return $this->filesystem()->hasInput( $input );
+
+	}
+
+	public function normalize( $item ) {
+
+		$item = FilesystemInput::normalize( $item );
+		return $item;
+
+	}
+
+	public function qualify( $alias )
+	{
+var_dump( $this->filesystem()->type() );
+		return $this->filesystem()->type()->qualify( $alias );
 
 	}
 

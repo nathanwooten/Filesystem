@@ -18,7 +18,8 @@ class Filesystem implements FilesystemPackage
 	protected static $instance = null;
 
 	protected $input = [];
-	protected $raw;
+
+	protected $factory;
 	protected $type;
 
 	public function __construct( $root = null ) {
@@ -44,25 +45,16 @@ class Filesystem implements FilesystemPackage
 	public function input( $input )
 	{
 
-		$this->raw = $input;
-
-		$name = FilesystemInput::normalize( $input );
-
-		if ( array_key_exists( $name, $this->input ) ) {
-			return $this->input[ $name ];
-		}
-
 		if ( ! $input instanceof FilesystemInput ) {
-
-			if ( ! in_array( gettype( $input ), [ 'string', 'array' ] ) ) {
-				throw new Exception( 'Input must be string or array' );
-			}
-
-			$input = new FilesystemInput( $input );
-
+			$input = $this->factory( 'Input', [ $input ] );
 		}
 
-		$this->input[$name] = $input;
+		$name = $input->getName();
+		if ( array_key_exists( $name, $this->input ) ) {
+			$input = $this->input[ $name ];
+		}
+
+		$this->input[ $name ] = $input;
 
 		return $input;
 
@@ -108,7 +100,7 @@ class Filesystem implements FilesystemPackage
 					throw new OutOfBoundsException( 'Invalid filter' );
 				}
 
-				$filter = new $filter;
+				$filter = $this->factory( $filter );
 
 			} else {
 
@@ -156,10 +148,22 @@ class Filesystem implements FilesystemPackage
 
 	}
 
-	public function factory()
+	public function factory( $alias = null, array $args = [] )
 	{
 
-		return $this->factory;
+		$obj = null;
+
+		$factory = $this->factory;
+		if ( is_null( $alias ) ) return $factory;
+
+		if ( method_exists( $factory, 'create' . $alias ) ) {
+			$methodName = 'create' . $alias;
+
+			$obj = $factory->$methodName( ...array_values( $args ) );
+
+		}
+
+		return $obj;
 
 	}
 
@@ -170,66 +174,18 @@ class Filesystem implements FilesystemPackage
 
 	}
 
-/*
-	public function scan( $readable, array $filters = [] ) {
-
-		$scan = [];
-
-		if ( is_array( $readable ) ) {
-			$readable = $this->implode( $readable );
-		}
-
-		if ( ! is_readable( $readable ) ) {
-
-			throw new Exception( 'Not readable for scan' );
-		}
-
-		foreach ( scandir( $readable ) as $key => $item ) {
-
-			$item = $this->apply( $item, $filters );
-
-			if ( $item ) {
-				$scan[ $key ] = $item;
-			}
-		}
-
-		$scan = array_values( $scan );
-
-		return $scan;
-
-	}
-
-	public function apply( $item, array $filters )
+	public static function getNamespace()
 	{
 
-		if ( empty( $item ) ) {
-			return;
-		}
-
-		foreach ( $filters as $filter ) {
-
-			if ( is_string( $filter ) ) {
-				if ( ! class_exists( $filter ) || ! in_array( __NAMESPACE__ . '\\' . 'FilesystemFilterInterface', class_implements( $filter ) ) ) {
-
-					throw new OutOfBoundsException( 'Invalid filter' );
-				}
-				$filter = new $filter;
-			}
-
-			$item = $filter( $item );
-		}
-
-		return $item;
+		return __NAMESPACE__;
 
 	}
 
-	public function structure( $input ) {
+	public static function getPackage()
+	{
 
-		$array = [];
+		return 'Filesystem';
 
-		$input = $this->input( $input );
+	}
 
-		$scan = $this->scan( $input
-
-*/
 }

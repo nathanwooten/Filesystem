@@ -28,6 +28,13 @@ class FilesystemInput
 
 	}
 
+	public function getName()
+	{
+
+		return $this->getString();
+
+	}
+
 	public function getString( $input = null )
 	{
 
@@ -79,14 +86,19 @@ class FilesystemInput
 
 	}
 
-	public static function normalize( $input = null )
+	public static function normalize( $input )
 	{
 
 		$normalized = [];
 
+		if ( $input instanceof FilesystemInput ) {
+			$input = $input->getInput();
+		}
+
 		if ( ! in_array( gettype( $input ), [ 'string', 'array' ] ) ) {
 			throw new Exception( 'Only normalizing strings and arrays' );
 		}
+
 		$input = (array) $input;
 		$input = array_values( $input );
 
