@@ -42,6 +42,7 @@ class FilesystemInput
 		if ( $this->strpos_( $this->input, $subject ) ) {
 			return true;
 		}
+
 		return false;
 
 	}

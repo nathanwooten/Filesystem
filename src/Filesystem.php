@@ -18,6 +18,7 @@ class Filesystem implements FilesystemPackage
 	protected static $instance = null;
 
 	protected $input = [];
+	protected $match = [];
 
 	protected $factory;
 	protected $type;
@@ -60,18 +61,36 @@ class Filesystem implements FilesystemPackage
 
 	}
 
-	public function search( $string ) {
+	public function search( $string )
+	{
 
-		foreach ( $this->input as $input ) {
+		$matches = [];
 
-			if ( $input->compare( $string ) ) {
-				return $input;
+		$input = $this->input( $string );
+
+		$normal = $input->getNormal();
+		if ( array_key_exists( $normal, $this->match ) ) {
+
+			$matches = $this->match[ $normal ];
+
+		} else {
+
+			foreach ( $this->input as $input ) {
+
+				if ( $input->compare( $string ) ) {
+
+					$this->match[ $string ] = $input;
+					$matches[] = $input;
+				}
 			}
 		}
 
+		return $matches;
+
 	}
 
-	public function scan( $input, array $filters = [] ) {
+	public function scan( $input, array $filters = [] )
+	{
 
 		$scan = [];
 		$input = $this->input( $input );
@@ -89,7 +108,8 @@ class Filesystem implements FilesystemPackage
 
 	}
 
-	public function apply( string $item, ...$filters ) {
+	public function apply( string $item, ...$filters )
+	{
 
 		foreach ( $filters as $filter ) {
 			$filter = $this->getFilter( $filter );
@@ -101,7 +121,8 @@ class Filesystem implements FilesystemPackage
 
 	}
 
-	public function getFilter( $filter ) {
+	public function getFilter( $filter )
+	{
 
 		if ( ! $file instanceof FileystemFilterInterface ) {
 
@@ -124,7 +145,8 @@ class Filesystem implements FilesystemPackage
 
 	}
 
-	public function scanRecursive( $input, $filters = [], array $scan = null ) {
+	public function scanRecursive( $input, $filters = [], array $scan = null )
+	{
 
 		$scan = (array) $scan;
 		$input = $this->input( $input );
