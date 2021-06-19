@@ -50,12 +50,12 @@ class FilesystemFactory extends FilesystemFactoryAbstract {
 		if ( class_exists( $string ) ) {
 			return $string;
 		}
-var_dump( $string );
+
 		$class = $this->qualify( $string );
 		if ( class_exists( $class ) ) {
 			return $class;
 		}
-var_dump( 'da da da da' );
+
 		return false;
 
 	}
@@ -103,7 +103,7 @@ var_dump( 'da da da da' );
 
 	public function qualify( $alias )
 	{
-var_dump( $this->filesystem()->type() );
+
 		return $this->filesystem()->type()->qualify( $alias );
 
 	}

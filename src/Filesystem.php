@@ -60,6 +60,17 @@ class Filesystem implements FilesystemPackage
 
 	}
 
+	public function search( $string ) {
+
+		foreach ( $this->input as $input ) {
+
+			if ( $input->compare( $string ) ) {
+				return $input;
+			}
+		}
+
+	}
+
 	public function scan( $input, array $filters = [] ) {
 
 		$scan = [];

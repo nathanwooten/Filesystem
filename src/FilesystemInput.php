@@ -13,11 +13,36 @@ use Exception;
 class FilesystemInput
 {
 
+	use FilesystemTrait;
+
 	protected $input;
 
 	public function __construct( $input ) {
 
 		$this->input = $input;
+
+	}
+
+	public function compare( $subject ) {
+
+		if ( is_object( $subject ) || ( ! is_array( $subject ) && ! is_string( $subject ) ) ) {
+			throw new Exception( 'Please provide a string or an array' );
+		}
+
+		if ( $subject === $this->getInput() ) {
+			return true;
+		}
+
+		$subject = $this->normalize( $subject );
+
+		if ( $subject === $this->getNormal() ) {
+			return true;
+		}
+
+		if ( $this->strpos_( $this->input, $subject ) ) {
+			return true;
+		}
+		return false;
 
 	}
 
@@ -32,6 +57,13 @@ class FilesystemInput
 	{
 
 		return $this->getString();
+
+	}
+
+	public function getNormal()
+	{
+
+		return $this->getName();
 
 	}
 
@@ -128,6 +160,13 @@ class FilesystemInput
 		}
 
 		return $item;
+
+	}
+
+	public function strpos_( $haystack, $needle )
+	{
+
+		return $this->filesystem()->type()->strpos_( $haystack, $needle );
 
 	}
 
