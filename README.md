@@ -4,6 +4,13 @@
 $dir = 'C:\nathanwooten\Operation\Violet\HomeBranch\Profordable\Projects\simplewebsite\Dev\Home\src';
 $filesystem = new nathanwooten\Filesystem\Filesystem( $dir );
 
+$input = $filesystem->search( 'SimpleWebsite' );
+$input = $filesystem->search( 'simplewebsite' );
+var_dump( $input );
+
+$dir = 'C:\nathanwooten\Operation\Violet\HomeBranch\Profordable\Projects\simplewebsite\Dev\Home\src';
+$filesystem = new nathanwooten\Filesystem\Filesystem( $dir );
+
 $input = $filesystem->input( $dir );
 var_dump( $input );
 
