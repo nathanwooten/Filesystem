@@ -54,4 +54,4 @@ if ( ! is_readable( $functions_dir ) ) {
 		}
 	}
 
-return true;
+return 1;
