@@ -1,8 +1,8 @@
 <?php
 
-namespace nathanwooten\Filesystem;
+namespace nathanwooten\Filesystem\Traits;
 
-use nathanwooten\Filesystem\{
+use nathanwooten\Filesystem\Traits\{
 
 	FilesystemFunctionTraitApplyFilters,
 	FilesystemFunctionTraitApplyFiltersItem,
@@ -19,19 +19,20 @@ use nathanwooten\Filesystem\{
 
 };
 
-trait FilesystemFunctionTrait {
+trait FilesystemFunctionTrait
+{
 
-	use FilesystemFunctionTraitApplyFilters,
-	use FilesystemFunctionTraitApplyFiltersItem,
-	use FilesystemFunctionTraitGetFilter,
-	use FilesystemFunctionTraitGetNamespace,
-	use FilesystemFunctionTraitGetReplace,
-	use FilesystemFunctionTraitGetSeparator,
-	use FilesystemFunctionTraitHasExtension,
-	use FilesystemFunctionTraitIsName,
-	use FilesystemFunctionTraitNormalize,
-	use FilesystemFunctionTraitQualify,
-	use FilesystemFunctionTraitScan,
-	use FilesystemFunctionTraitStrpos
+	use FilesystemFunctionTraitApplyFilters;
+	use FilesystemFunctionTraitApplyFiltersItem;
+	use FilesystemFunctionTraitGetFilter;
+	use FilesystemFunctionTraitGetNamespace;
+	use FilesystemFunctionTraitGetReplace;
+	use FilesystemFunctionTraitGetSeparator;
+	use FilesystemFunctionTraitHasExtension;
+	use FilesystemFunctionTraitIsName;
+	use FilesystemFunctionTraitNormalize;
+	use FilesystemFunctionTraitQualify;
+	use FilesystemFunctionTraitScan;
+	use FilesystemFunctionTraitStrpos;
 
 }

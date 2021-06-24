@@ -1,6 +1,6 @@
 <?php
 
-namespace nathanwooten\Filesystem;
+namespace nathanwooten\Filesystem\Traits;
 
 use function nathanwooten\Filesystem\Functions\scan;
 
