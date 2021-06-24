@@ -1,34 +1,59 @@
 <?php
 
+if ( ! defined( 'DS' ) ) define( 'DS', DIRECTORY_SEPARATOR );
+
+use nathanwooten\Autoloader\Autoloader;
+
+global $autoloader;
+
+global $library_dir_name;
+global $functions_dir_name;
+
+////////// edit here
+
+$filesystemNamespace = 'nathanwooten\Filesystem';
+$filesystemDir = dirname( __FILE__ ) . DS;
+
+$library_dir_name = isset( $library_dir_name ) ? $library_dir_name : 'library';
+$functions_dir_name = isset( $functions_dir_name ) ? $functions_dir_name : 'Functions';
+
+	$filterNamespace = 'nathanwooten\Filter';
+	$filesystemDir = ABSPATH . $library_dir_name . 'Filter' . DS . 'src' . DS
+
+//////////
+
+if ( ! empty( $functions_dir_name ) ) {
+	$functions_dir_name .= DS;
+}
+
 if ( ! defined( 'AUTOLOADER' ) ) {
-	require_once ABSPATH . 'library' . DIRECTORY_SEPARATOR . 'Autoloader' . DIRECTORY_SEPARATOR . 'index.php';
+	require_once ABSPATH . $library_dir_name . DS . 'Autoloader' . DS . 'index.php';
 } else {
 	require_once AUTOLOADER;
 }
 
-global $autoloader;
+$autoloader = isset( $autoloader ) ? $autoloader : new Autoloader;
 
-$namespace = 'nathanwooten\Filesystem';
-$dir = dirname( __FILE__ ) . DIRECTORY_SEPARATOR;
+	$autoloader->set( $filesystemNamespace, $filesystemDir );
+		$autoloader->set( $filterNamespace, $filterDir );
 
-$autoloader->set( $namespace, $dir );
+$functions_dir = $dir . $functions_dir_name;
 
-//////////
-
-$fdir = $dir . 'Functions' . DIRECTORY_SEPARATOR;
-if ( ! is_readable( $fdir ) ) {
-  return false;  
+if ( ! is_readable( $functions_dir ) ) {
+	return false;  
 }
 
-$scan = scandir( $fdir );
+$scan = scandir( $functions_dir );
 foreach ( $scan as $item ) {
-  $path = $fdir . $item;
-  if ( is_file( $path ) ) {
-    $result = require_once $path;
-	if ( ! $result ) {
-		throw new Exception;
+
+	$path = $fdir . $item;
+
+	if ( is_file( $path ) ) {
+		$result = require_once $path;
+		if ( ! $result ) {
+			throw new Exception;
+		}
 	}
-  }
 }
 
 return true;
