@@ -33,27 +33,25 @@ if ( ! defined( 'AUTOLOADER' ) ) {
 }
 
 $autoloader = isset( $autoloader ) ? $autoloader : new Autoloader;
-
 	$autoloader->set( $filesystemNamespace, $filesystemDir );
 		$autoloader->set( $filterNamespace, $filterDir );
 
 $functions_dir = $dir . $functions_dir_name;
-
 if ( ! is_readable( $functions_dir ) ) {
-	return false;  
+	throw new Exception( 'Unreadable functions directory' );
 }
 
-$scan = scandir( $functions_dir );
-foreach ( $scan as $item ) {
+	$scan = scandir( $functions_dir );
+	foreach ( $scan as $item ) {
 
-	$path = $fdir . $item;
+		$path = $fdir . $item;
 
-	if ( is_file( $path ) ) {
-		$result = require_once $path;
-		if ( ! $result ) {
-			throw new Exception;
+		if ( is_file( $path ) ) {
+			$result = require_once $path;
+			if ( ! $result ) {
+				throw new Exception( 'Required lib file not available: ' . $path );
+			}
 		}
 	}
-}
 
 return true;
