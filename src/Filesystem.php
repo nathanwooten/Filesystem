@@ -4,221 +4,364 @@ namespace nathanwooten\Filesystem;
 
 use nathanwooten\Filesystem\{
 
-	FilesystemPackage,
-	FilesystemInput,
-	FilesystemFilter
+	FilesystemFunctionTrait,
 
 };
 
-use Exception;
+use function nathanwooten\Filesystem\Functions\{
 
-class Filesystem implements FilesystemPackage
+	is_name,
+	normalize,
+
+};
+
+class Filesystem
 {
 
-	protected static $instance = null;
+	use FilesystemFunctionTrait;
 
-	protected $input = [];
-	protected $match = [];
+	protected $abspath;
+	protected $filesystem = [];
+	protected $result = [];
 
-	protected $factory;
-	protected $type;
+	public function __construct( $abspath )
+	{
 
-	public function __construct( $root = null ) {
+		$this->abspath = $abspath;
 
-		self::$instance = $this;
-
-		$this->factory = new FilesystemFactory;
-		$this->type = new FilesystemTypeHelper;
-
-		if ( $root ) {
-			$this->input( $root );
-		}
+		$this->filesystem = $this->scan( $this->abspath, [ 'File' ] );
 
 	}
 
-	public static function getInstance()
-	{
+	public function get( $input ) {
 
-		return self::$instance ? self::$instance : new self;
+		$input = self::handleInput( $input );
+
+		if ( ! array_key_exists( $input, $this->result ) ) {
+
+			$result = new FilesystemSearchResult( $input );
+
+			foreach ( $this->filesystem as $path ) {
+
+				if ( false !== $this->strpos_( $path, $input ) ) {
+
+					$result->addResult( $path );
+				}
+			}
+
+			$this->result[ $input ] = $result;
+		}
+
+		return $this->result[ $input ];
 
 	}
 
-	public function input( $input )
-	{
+	public static function handleInput( $input ) {
 
-		if ( ! $input instanceof FilesystemInput ) {
-			$input = $this->factory( 'Input', [ $input ] );
+		if ( $input instanceof FilesystemInput ) {
+
+			$input = $input->getNormal();
+
+		} else {
+
+			$input = new FilesystemInput( $input );
+
+			$input = is_name( $input->getInput() ) ? $input->getInput() : $input->getNormal( $input );
 		}
-
-		$name = $input->getName();
-		if ( array_key_exists( $name, $this->input ) ) {
-			$input = $this->input[ $name ];
-		}
-
-		$this->input[ $name ] = $input;
 
 		return $input;
 
 	}
 
-	public function search( $string )
+}
+
+/*
+use function gettype;
+
+interface FilesystemPackage {
+
+	public function getName();
+
+}
+
+class FilesystemIterator
+{
+/*
+	const ON = 0;
+	const IN = 1;
+//
+
+	protected $item;
+	protected $pointer = 0;
+
+	public function __construct( FilesystemDirectory $item ) {
+
+		$this->item = $item;
+
+	}
+
+	public function getItem()
 	{
 
-		$matches = [];
+		return $this->item;
 
-		$input = $this->input( $string );
+	}
 
-		$normal = $input->getNormal();
-		if ( array_key_exists( $normal, $this->match ) ) {
+	public function getPrev()
+	{
 
-			$matches = $this->match[ $normal ];
+		return $this->getItem()->getParent();
 
+	}
+
+	public function getNext()
+	{
+
+		return $this->getItem()->getNext();
+
+	}
+
+
+/*
+	public function add()
+	{
+
+		$pointer = $this->pointer;
+
+		if ( false === strpos( $pointer, '.' ) ) {
+			if ( $pointer < 0 ) {
+				throw new Exception;
+			}
+			$pointer++;
+			return $pointer;
+		}
+
+		$dotted = array_reverse( explode( '.', $pointer ) );
+
+		
+
+
+	}
+*/
+/*
+	public function getParent()
+	{
+
+		$item = $this->item;
+		$parent = $this->getItem()->getParent();
+		return $parent;
+
+	}
+
+	public function getPrev()
+	{
+
+		if ( 0 === $this->getItem()->key() ) {
+			$this->getItem()->getParent();
 		} else {
-
-			foreach ( $this->input as $input ) {
-
-				if ( $input->compare( $string ) ) {
-
-					$this->match[ $string ] = $input;
-					$matches[] = $input;
-				}
-			}
+			$this->getItem()->prev();
 		}
 
-		return $matches;
+		$this->advance();
 
 	}
 
-	public function scan( $input, array $filters = [] )
+	public function getNext()
 	{
 
-		$scan = [];
-		$input = $this->input( $input );
-
-		foreach ( scandir( $input->getString() ) as $key => $item ) {
-
-			$item = $this->apply( $item, ...$filters );
-
-			if ( $item ) {
-				$scan[ $key ] = $item;
-			}
-		}
-
-		return $scan;
+		return $this->getItem->getNext();
 
 	}
-
-	public function apply( string $item, ...$filters )
+*/
+/*
+	public function getNext()
 	{
 
-		foreach ( $filters as $filter ) {
-			$filter = $this->getFilter( $filter );
-
-			$item = $filter( $item );
+		if ( static::ON === $this->getStatus() ) {
+			$next = $this->getDirectory()
+			$this->setStatus( static::IN );
+			return $next;
 		}
 
-		return $item;
-
-	}
-
-	public function getFilter( $filter )
-	{
-
-		if ( ! $file instanceof FileystemFilterInterface ) {
-
-			if ( is_string( $filter ) ) {
-				if ( ! class_exists( $filter ) || ! in_array( __NAMESPACE__ . '\\' . 'FilesystemFilterInterface', class_implements( $filter ) ) ) {
-
-					throw new OutOfBoundsException( 'Invalid filter' );
-				}
-
-				$filter = $this->factory( $filter );
-
-			} else {
-
-				throw new Exception( 'Unknown filter type' );
+		if ( static::IN === $this->getStatus() ) {
+			$next = next( $this->directory_->children );
+			if ( ! $next ) {
+				$this->
 			}
 
+			return $next;
 		}
 
-		return $filter;
+		throw new Excpetion( 'Unknown status' );
 
 	}
+*/
+/*
+}
+/*
+class FilesystemDirectory implements FilesystemPackage
+{
 
-	public function scanRecursive( $input, $filters = [], array $scan = null )
+	protected $children = [];
+	protected $input;
+	protected $parent = null;
+
+	public function __construct( $input, FilesystemDirectory $parent = null )
 	{
 
-		$scan = (array) $scan;
-		$input = $this->input( $input );
+		$this->input = $this->normal = Filesystem::handleInput( $input );
+		$this->children = scan( $this->normal );
 
-		foreach ( $this->scan( $input ) as $item ) {
-
-			$dir = $input->getDirectory();
-			$path = $dir . $item;
-
-			if ( is_dir( $path ) ) {
-				$scan = $this->scanRecursive( $path, $filters, $scan );
-			}
-
-			$scan[] = $path;
+		if ( ! is_null( $parent ) ) {
+			$this->parent = $parent;
 		}
 
-		return $scan;
+	}
+
+	public function getName() {
+
+		$explode = explode( DIRECTORY_SEPARATOR, trim( $this->getNormal(), DIRECTORY_SEPARATOR ) );
+		$name = array_pop( $explode );
+		return $name;
 
 	}
 
-	public function type()
-	{
+	public function getNormal() {
 
-		return $this->type;
-
-	}
-
-	public static function typeStatic()
-	{
-
-		return self::getInstance()->type();
+		return $this->normal;
 
 	}
 
-	public function factory( $alias = null, array $args = [] )
+	public function getPrev()
 	{
 
-		$obj = null;
-
-		$factory = $this->factory;
-		if ( is_null( $alias ) ) return $factory;
-
-		if ( method_exists( $factory, 'create' . $alias ) ) {
-			$methodName = 'create' . $alias;
-
-			$obj = $factory->$methodName( ...array_values( $args ) );
-
-		}
-
-		return $obj;
+		return prev( $this->children );
 
 	}
 
-	public static function factoryStatic()
+	public function getNext()
 	{
 
-		return self::getInstance()->factory();
+		return next( $this->children );
 
 	}
 
-	public static function getNamespace()
+	public function reset()
 	{
 
-		return __NAMESPACE__;
-
-	}
-
-	public static function getPackage()
-	{
-
-		return 'Filesystem';
+		reset( $this->children );
 
 	}
 
 }
+
+class FilesystemFile {
+
+	public function __construct( $input )
+	{
+
+		$this->input = Filesystem::handleInput( $input );
+
+	}
+
+}
+
+class FilesystemInput implements FilesystemPackage
+{
+
+	protected $input;
+
+	public function __construct( $input ) {
+
+		$this->input = $input;
+
+	}
+
+	public function getInput()
+	{
+
+		return $this->input;
+
+	}
+
+	public function getNormal()
+	{
+
+		$input = $this->getInput();
+		$normal = normalize( $input );
+		return $normal;
+
+	}
+
+	public function getName()
+	{
+
+		return $this->getNormal();
+
+	}
+
+}
+
+class Filesystem implements FilesystemPackage
+{
+
+	protected $filesystem = null;
+
+	public function __construct( $input ) {
+
+		$input = static::handleInput( $input );
+
+		$this->filesystem = $this->createDirectory( $input );
+
+	}
+
+	public function getName() {
+
+		return $this->filesystem->getString();
+
+	}
+
+	public static function handleInput( $input ) {
+
+		if ( $input instanceof FilesystemInput ) {
+			$input = $input->getInput();
+		}
+
+		if ( ! in_array( gettype( $input ), [ 'string', 'array' ] ) ) {
+			throw new Exception( 'Bad type bad type bad' );
+		}
+
+		$input = normalize( $input );
+
+		return $input;
+
+	}
+
+	protected function factory( $alias, $input ) {
+
+		return $this->create( qualify( $alias ), $input );
+
+	}
+
+	protected function create( $class, $input )
+	{
+
+		if ( ! class_exists( $class ) ) {
+			throw new Exception( 'Class does not exists' );
+		}
+
+		return new $class( ...array_values( (array) $input ) );
+
+	}
+
+	protected function createDirectory( $input ) {
+
+		$input = static::handleInput( $input );
+		$directory = $this->factory( 'Directory', $input );
+
+		return $directory;
+
+	}
+
+}
+*/
