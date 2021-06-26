@@ -2,7 +2,7 @@
 
 namespace nathanwooten\Filesystem\Traits;
 
-use function nathanwooten\Filesystem\Functions\;
+use function nathanwooten\Filesystem\Functions\get_namespace;
 
 trait FilesystemFunctionTraitGetNamespace
 {
