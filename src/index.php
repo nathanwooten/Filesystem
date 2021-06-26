@@ -11,14 +11,14 @@ global $functions_dir_name;
 
 ////////// edit here
 
-$filesystemNamespace = 'nathanwooten\Filesystem';
-$filesystemDir = dirname( __FILE__ ) . DS;
+$filesystem_namespace = 'nathanwooten\Filesystem';
+$filesystem_dir = dirname( __FILE__ ) . DS;
 
 $library_dir_name = isset( $library_dir_name ) ? $library_dir_name : 'library';
 $functions_dir_name = isset( $functions_dir_name ) ? $functions_dir_name : 'Functions';
 
-	$filterNamespace = 'nathanwooten\Filter';
-	$filesystemDir = ABSPATH . $library_dir_name . 'Filter' . DS . 'src' . DS
+	$filter_namespace = 'nathanwooten\Filter';
+	$filter_dir = ABSPATH . $library_dir_name . 'Filter' . DS . 'src' . DS;
 
 //////////
 
@@ -33,10 +33,11 @@ if ( ! defined( 'AUTOLOADER' ) ) {
 }
 
 $autoloader = isset( $autoloader ) ? $autoloader : new Autoloader;
-	$autoloader->set( $filesystemNamespace, $filesystemDir );
-		$autoloader->set( $filterNamespace, $filterDir );
+	$autoloader->set( $filesystem_namespace, $filesystem_dir );
+		$autoloader->set( $filter_namespace, $filter_dir );
 
-$functions_dir = $dir . $functions_dir_name;
+$functions_dir = $filesystem_dir . $functions_dir_name;
+var_dump( $functions_dir );
 if ( ! is_readable( $functions_dir ) ) {
 	throw new Exception( 'Unreadable functions directory' );
 }
@@ -44,7 +45,7 @@ if ( ! is_readable( $functions_dir ) ) {
 	$scan = scandir( $functions_dir );
 	foreach ( $scan as $item ) {
 
-		$path = $fdir . $item;
+		$path = $functions_dir . $item;
 
 		if ( is_file( $path ) ) {
 			$result = require_once $path;

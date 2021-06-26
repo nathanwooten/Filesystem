@@ -2,7 +2,7 @@
 
 namespace nathanwooten\Filesystem;
 
-use nathanwooten\Filesystem\{
+use nathanwooten\Filesystem\Traits\{
 
 	FilesystemFunctionTrait,
 
@@ -66,7 +66,8 @@ class Filesystem
 
 			$input = new FilesystemInput( $input );
 
-			$input = is_name( $input->getInput() ) ? $input->getInput() : $input->getNormal( $input );
+			$input = $input->getNormal( $input );
+//			$input = is_name( $input->getInput() ) ? $input->getInput() : $input->getNormal( $input );
 		}
 
 		return $input;
